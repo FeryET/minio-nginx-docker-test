@@ -13,24 +13,18 @@ services:
     volumes:
       - nginx_secrets:/etc/letsencrypt
       - ./user_conf.d:/etc/nginx/user_conf.d
-      - ./nginx_logs:/var/log/nginx/
+      - ./log/nginx:/var/log/nginx/
   minio:
     image: minio/minio
     container_name: minio
     volumes:
       - ./data/minio/:/data
-    command:
-      [
-        server,
-        /data,
-        --address,
-        ':9000',
-        --console-address,
-        ':9001'
-      ]
+      - nginx_secrets:/secrets/
+    command: server /data --address ':9000' --console-address ':9001'
     environment:
       MINIO_ROOT_USER: minio_admin
       MINIO_ROOT_PASSWORD: minio_123456
+      MINIO_BROWSER_REDIRECT_URL: "http://farhoodetaati.me/minio"
     ports:
       - 9000
       - 9001
